@@ -1,0 +1,346 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+
+//Para usar:
+//var MyIni = new DLL_Estudio_de_Tattoo.INI_Versao_2.IniFile("Valores.ini");
+
+namespace DLL_Estudio_de_Tattoo
+{
+    
+    public class INI
+        {
+             
+            public INI(string file, string commentDelimiter = ";")
+            {
+                CommentDelimiter = commentDelimiter;
+                TheFile = file;
+            }
+
+            public INI()
+            {
+                CommentDelimiter = ";";
+            }
+            public string CommentDelimiter { get; set; }
+
+            private string theFile = null;
+            public string TheFile
+            {
+                get
+                {
+                    return theFile;
+                }
+                set
+                {
+                    theFile = null;
+                    dictionary.Clear();
+                    if (File.Exists(value))
+                    {
+                        theFile = value;
+                        using (StreamReader sr = new StreamReader(theFile))
+                        {
+                            string line, section = "";
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                line = line.Trim();
+                                if (line.Length == 0) continue;  // empty line
+                                if (!String.IsNullOrEmpty(CommentDelimiter) && line.StartsWith(CommentDelimiter))
+                                    continue;  // comment
+
+                                if (line.StartsWith("[") && line.Contains("]"))  // [section]
+                                {
+                                    int index = line.IndexOf(']');
+                                    section = line.Substring(1, index - 1).Trim();
+                                    continue;
+                                }
+
+                                if (line.Contains("="))  // key=value
+                                {
+                                    int index = line.IndexOf('=');
+                                    string key = line.Substring(0, index).Trim();
+                                    string val = line.Substring(index + 1).Trim();
+                                    string key2 = String.Format("[{0}]{1}", section, key).ToLower();
+
+                                    if (val.StartsWith("\"") && val.EndsWith("\""))  // strip quotes
+                                        val = val.Substring(1, val.Length - 2);
+
+                                    if (dictionary.ContainsKey(key2))  // multiple values can share the same key
+                                    {
+                                        index = 1;
+                                        string key3;
+                                        while (true)
+                                        {
+                                            key3 = String.Format("{0}~{1}", key2, ++index);
+                                            if (!dictionary.ContainsKey(key3))
+                                            {
+                                                dictionary.Add(key3, val);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        dictionary.Add(key2, val);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+
+            private bool TryGetValue(string section, string key, out string value)
+            {
+                string key2;
+                if (section.StartsWith("["))
+                    key2 = String.Format("{0}{1}", section, key);
+                else
+                    key2 = String.Format("[{0}]{1}", section, key);
+
+                return dictionary.TryGetValue(key2.ToLower(), out value);
+            }
+         
+
+            public string PegarValor(string section, string key, string defaultValue = "")
+            {
+                string value;
+                if (!TryGetValue(section, key, out value))
+                    return defaultValue;
+
+                return value;
+            }
+
+            public string this[string section, string key]
+            {
+                get
+                {
+                    return PegarValor(section, key);
+                }
+            }
+
+            public int PegarValorINT(string section, string key, int defaultValue = 0,
+                int minValue = int.MinValue, int maxValue = int.MaxValue)
+            {
+                string stringValue;
+                if (!TryGetValue(section, key, out stringValue))
+                    return defaultValue;
+
+                int value;
+                if (!int.TryParse(stringValue, out value))
+                {
+                    double dvalue;
+                    if (!double.TryParse(stringValue, out dvalue))
+                        return defaultValue;
+                    value = (int)dvalue;
+                }
+
+                if (value < minValue)
+                    value = minValue;
+                if (value > maxValue)
+                    value = maxValue;
+                return value;
+            }
+            public double PegarValorDouble(string section, string key, double defaultValue = 0,
+                double minValue = double.MinValue, double maxValue = double.MaxValue)
+            {
+                string stringValue;
+                if (!TryGetValue(section, key, out stringValue))
+                    return defaultValue;
+
+                double value;
+                if (!double.TryParse(stringValue, out value))
+                    return defaultValue;
+
+                if (value < minValue)
+                    value = minValue;
+                if (value > maxValue)
+                    value = maxValue;
+                return value;
+            }
+
+            public bool PegarValorBool(string section, string key, bool defaultValue = false)
+            {
+                string stringValue;
+                if (!TryGetValue(section, key, out stringValue))
+                    return defaultValue;
+
+                return (stringValue != "0" && !stringValue.StartsWith("f", true, null));
+            }
+
+            public string[] PegarTodosValores(string section, string key)
+            {
+                string key2, key3, value;
+                if (section.StartsWith("["))
+                    key2 = String.Format("{0}{1}", section, key).ToLower();
+                else
+                    key2 = String.Format("[{0}]{1}", section, key).ToLower();
+
+                if (!dictionary.TryGetValue(key2, out value))
+                    return null;
+
+                List<string> values = new List<string>();
+                values.Add(value);
+                int index = 1;
+                while (true)
+                {
+                    key3 = String.Format("{0}~{1}", key2, ++index);
+                    if (!dictionary.TryGetValue(key3, out value))
+                        break;
+                    values.Add(value);
+                }
+
+                return values.ToArray();
+            }
+        }
+
+    public class INI_Versao_2
+    {
+        public class IniFile   //
+        //    var MyIni = new DLL_Estudio_de_Tattoo.INI_Versao_2.IniFile("Valores.ini");
+        {
+            string Path;
+            string EXE = Assembly.GetExecutingAssembly().GetName().Name;
+
+            [DllImport("kernel32", CharSet = CharSet.Unicode)]
+            static extern long WritePrivateProfileString(string Section, string Key, string Value, string FilePath);
+
+            [DllImport("kernel32", CharSet = CharSet.Unicode)]
+            static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
+
+            public IniFile(string IniPath = null)
+            {
+                Path = new FileInfo(IniPath ?? EXE + ".ini").FullName.ToString();
+            }
+
+            public string Read(string Key, string Section = null)
+            {
+                var RetVal = new StringBuilder(255);
+                GetPrivateProfileString(Section ?? EXE, Key, "", RetVal, 255, Path);
+                return RetVal.ToString();
+            }
+
+            public void Write(string Key, string Value, string Section = null)
+            {
+                WritePrivateProfileString(Section ?? EXE, Key, Value, Path);
+            }
+
+            public void DeleteKey(string Key, string Section = null)
+            {
+                Write(Key, null, Section ?? EXE);
+            }
+
+            public void DeleteSection(string Section = null)
+            {
+                Write(null, null, Section ?? EXE);
+            }
+
+            public bool KeyExists(string Key, string Section = null)
+            {
+                return Read(Key, Section).Length > 0;
+            }
+        }
+    }
+
+
+    public class Verificacoes
+    {
+        public static bool Verificar_Arquivo(string Nome_do_Arquivo)
+        {
+            if(File.Exists(Nome_do_Arquivo))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static void Renomear(string NomeAntigo, string NomeNovo)
+        {
+            System.IO.File.Move(@NomeAntigo, @NomeNovo);
+        }
+
+        public static void Criar_Arquivo(string Diretorio)
+        {
+            System.IO.File.Create(Diretorio);
+        }
+
+        public static void Apagar_Arquivo(string Diretorio)
+        {
+            System.IO.File.Delete(Diretorio);
+        }
+
+
+    }
+
+    
+
+    public class Operacoes_Matematicas
+    {
+        public static int Somar(int Valor1, int Valor2)
+        {
+            return Valor1 + Valor2;
+        }
+
+        public static int Dividir(int Valor1, int Valor2)
+        {
+            return Valor1 / Valor2;
+        }
+
+        public static int Multiplicar(int Valor1, int Valor2)
+        {
+            return Valor1 * Valor2;
+        }
+
+        public static int Subtrair(int Valor1, int Valor2)
+        {
+            return Valor1 - Valor2;
+        }
+
+    }
+
+    public class Funcoes
+    {
+        public static string Pegar_Valor_Em_String(string NomeArquivo, string Sessao, string Item)
+        {
+            var iniFile = new INI(NomeArquivo);
+            return iniFile.PegarValor(Sessao, Item);//0.10
+        }
+
+        public static int Pegar_Valor_Em_INT(string NomeArquivo, string Sessao, string Item)
+        {
+            var iniFile = new INI(NomeArquivo);
+            return iniFile.PegarValorINT(Sessao, Item);//0.10
+        }
+
+        public static void RenomearArquivo(string Nome_Original, string Nome_Final)
+        {
+            if(File.Exists(Nome_Original))
+            {
+
+            }
+            else 
+            {
+                if (File.Exists(Nome_Original))
+                {
+                    System.IO.File.Move(Nome_Original, Nome_Final);
+                    
+
+                }
+            }
+            
+        }
+       
+    }
+
+   
+    
+}
