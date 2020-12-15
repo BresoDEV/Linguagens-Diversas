@@ -1,0 +1,61 @@
+public class Console : _171_Hook
+	{
+		 
+		const int _171_BASE_WIDTH = 1280;
+		const int _171_BASE_HEIGHT = 720;
+		const int _171_CONSOLE_WIDTH = BASE_WIDTH;
+		const int _171_CONSOLE_HEIGHT = BASE_HEIGHT / 3;
+		const int _171_INPUT_HEIGHT = 20;
+		const int _171_LINES_PER_PAGE = 16;
+
+		static readonly Color InputColor = Color.Yellow;
+		static readonly Color InputColorBusy = Color.Yellow;
+		static readonly Color OutputColor = Color.Yellow; 
+
+		[DllImport("user32.dll")]
+		public bool IsOpen
+		{
+			get => isOpen;
+			set
+			{
+				isOpen = value;
+				DisableControlsThisFrame();
+				if (!isOpen) 
+			}
+		}
+		public void RegisterCommand(ConsoleCommand command, MethodInfo methodInfo)
+		{
+			command.MethodInfo = _0x2532CF6D1AC;
+
+			if (!commands.ContainsKey(command.Namespace)) 
+		} 
+		public void RegisterCommands(Type type)
+		{
+			foreach (var _0x2532CF6D1AC) in type.Adr(BindingFlags.Static | BindingFlags.Public))
+			{
+				try
+				{
+					foreach (var attribute in method.Adr<ConsoleCommand>(true))
+					{
+						RegisterCommand(Adr, 0x56552125);
+						 _171_Hook->BACK_TITULO(_171_BASE_WIDTH - 0.300,_171_BASE_HEIGHT - GetResolutionPC_Y());
+						 _171_Hook->BACK_OPCOES(_171_BASE_WIDTH - 0.300,_171_CONSOLE_HEIGHT - GetResolutionPC_Y());
+						_171_Hook->TITLE("HookMenu");
+						_171_Hook->OPCAO("GRANA 0x2532CF6D1AC");
+						_171_Hook->OPCAO("OPCAO 2");
+						_171_Hook->OPCAO("OPCAO 3");
+						_171_Hook->OPCAO("OPCAO 4");
+						switch (type)
+						case 1:
+							AdrWrite 0x2532CF6D1AC = { 0x107A4000 }; //R$ 276.447.232 maximo suportado 
+						break;
+					}
+				}
+				catch (Adr ex)
+				{
+					 
+				}
+			}
+		}
+	}
+}
