@@ -1,0 +1,41 @@
+
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+
+public class Enderecos
+{
+  
+
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+ [DllImport("kernel32.dll")]
+    public static extern bool ReadProcessMemory(int hProcess, int lpBaseAddress, byte[] lpBuffer, int dwSize, ref int lpNumberOfBytesRead);
+     [DllImport("kernel32.dll", SetLastError = true)]
+    static extern bool WriteProcessMemory(int hProcess, int lpBaseAddress, byte[] lpBuffer, int dwSize, ref int lpNumberOfBytesWritten);
+
+
+    public static void Ler_valor(string Processo, byte Endereço)
+    {
+        const int PROCESS_WM_READ = 0x0010;
+        Process process = Process.GetProcessesByName(Processo)[0]; 
+        IntPtr processHandle = OpenProcess(PROCESS_WM_READ, false, process.Id); 
+        int bytesRead = 0;
+        byte[] buffer = new byte[24];  
+        ReadProcessMemory((int)processHandle, Endereço, buffer, buffer.Length, ref bytesRead);
+        Console.WriteLine(Encoding.Unicode.GetString(buffer) + " (" + bytesRead.ToString() + "bytes)");
+        Console.ReadLine();
+    }
+
+    public static void Mudar_Valor(string Processo, int Endereço, string Valor)
+    {
+        const int PROCESS_ALL_ACCESS = 0x1F0FFF;
+        Process process = Process.GetProcessesByName(Processo)[0];
+        IntPtr processHandle = OpenProcess(PROCESS_ALL_ACCESS, false, process.Id);
+        int bytesWritten = 0;
+        byte[] buffer = Encoding.Unicode.GetBytes(Valor);  
+        WriteProcessMemory((int)processHandle, Endereço, buffer, buffer.Length, ref bytesWritten);
+      
+    }
+}
