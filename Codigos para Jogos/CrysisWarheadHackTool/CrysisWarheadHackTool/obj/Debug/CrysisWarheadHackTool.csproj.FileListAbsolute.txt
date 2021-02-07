@@ -1,0 +1,10 @@
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\bin\Debug\CrysisWarheadHackTool.exe.config
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\bin\Debug\CrysisWarheadHackTool.exe
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\bin\Debug\CrysisWarheadHackTool.pdb
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\obj\Debug\CrysisWarheadHackTool.csprojResolveAssemblyReference.cache
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\obj\Debug\CrysisWarheadHackTool.Form1.resources
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\obj\Debug\CrysisWarheadHackTool.Properties.Resources.resources
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\obj\Debug\CrysisWarheadHackTool.csproj.GenerateResource.Cache
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\obj\Debug\CrysisWarheadHackTool.exe
+c:\users\breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\obj\Debug\CrysisWarheadHackTool.pdb
+C:\Users\Breso\documents\visual studio 2013\Projects\CrysisWarheadHackTool\CrysisWarheadHackTool\bin\Debug\MetroFramework.dll
