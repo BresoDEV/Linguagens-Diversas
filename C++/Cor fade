@@ -1,0 +1,15 @@
+if (colour.R > 0 && colour.B == 0)
+		{
+			colour.R--;
+			colour.G++;
+		}
+		if (colour.G > 0 && colour.R == 0)
+		{
+			colour.G--;
+			colour.B++;
+		}
+		if (colour.B > 0 && colour.G == 0)
+		{
+			colour.R++;
+			colour.B--;
+		}
