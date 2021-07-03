@@ -49,3 +49,13 @@ bool DoesFileExists(std::string path) {
 	if (std::ifstream(path)) return true;
 	return false;
 }
+
+
+
+
+Exemplos:
+Ini* settingsIni = new Ini(".\\Breso.ini");
+settingsIni->WriteFloat(FLOATS::float_1, "MODS", "float_1");
+
+Ini* settingsIni = new Ini(".\\Breso.ini");   
+FLOATS::float_1 = settingsIni->GetFloat("MODS", "float_1");
